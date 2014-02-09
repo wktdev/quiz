@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>quiz</title>
+ 
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.js" charset="utf-8"></script>
+
+
+</head>
+
+<body>
+
+
+    <script>
+    "use strict";
+    var q1, q2, q3;
+    var questions = [
+        q1 = ['Shape of the earth is ', 'round', 'square', 'green', 1],
+        q2 = ['What is loud?', 'bag', 'Javascript', 'rock music', 3],
+        q3 = ['This is a..', 'quiz', 'dog', 'oink', 1],
+
+    ];
+
+
+
+    var MODULE = (function() {
+
+        var quiz = {
+            questionsList: '',
+            correctQuestionsAnswerList: [],
+            answerChoices: [],
+            finalUserAnswers: [],
+            finalUserAnswersVal: [],
+
+
+
+            getRadioValue: function(theRadioGroup) {
+                var elements = document.getElementsByName(theRadioGroup);
+                for (var i = 0, l = elements.length; i < l; i++) {
+                    if (elements[i].checked) {
+                        // console.log(elements[i].id);
+                        return elements[i].id;
+                    }
+                }
+            },
+
+
+            
+            compareCorrectToUserAnswers:function(){
+                var i;
+                for(i=0;i < this.correctQuestionsAnswerList.length; i+=1){
+
+                    if(this.correctQuestionsAnswerList[i] === this.finalUserAnswersVal[i]){
+                        console.log(this.questionsList[i] +": Your answer is correct")
+                    } 
+
+                    else{ console.log(this.questionsList[i] + ": Your answer is incorrect")}
+                        
+
+                }
+            },
+
+
+
+            onSubmitClick: function(arr) {
+                $('button').click(function() {
+                    quiz.finalUserAnswers = [];
+                    quiz.finalUserAnswersVal = [];
+                    var i;
+                    for (i = 0; i < arr.length; i += 1) {
+                        var ques = arr[i][0];
+                        quiz.finalUserAnswers.push(quiz.getRadioValue(ques));
+                    }
+
+
+                    $.each(quiz.finalUserAnswers, function(index, value) {
+
+                        quiz.finalUserAnswersVal.push(parseInt(value.slice(-1)));
+                    }); 
+
+                    // console.log(quiz.finalUserAnswersVal);
+                    quiz.compareCorrectToUserAnswers();
+                })
+            },
+
+
+            appendQuestionToDom: function() {
+                var i
+                for (i = 0; i < this.questionsList.length; i += 1) {
+                    var nonZeroBasedCounter = i + 1;
+                    var question = this.questionsList[i][0];
+
+                    var questionHeader = $('<h3>', {
+                        class: 'question',
+                        id: 'question-' + nonZeroBasedCounter,
+                        text: question
+                    }).appendTo('body');
+                }
+
+            },
+
+
+            appendQuestionChoicesToDom: function() {
+                // console.log(this.answerChoices);
+                // console.log(this.answerChoices.length);
+                var i, j;
+                for (i = 0; i < this.answerChoices.length; i += 1) {
+                    var nonZeroBasedCounter = i + 1;
+                    for (j = 0; j < this.answerChoices[i].length; j += 1) {
+                        var nonZeroBasedCounterForj = j + 1;
+                        $('<p>', {
+                            text: this.answerChoices[i][j],
+                            class: 'choiceForQuestion-' + nonZeroBasedCounter,
+                            id: 'answerChoice-' + (nonZeroBasedCounterForj),
+
+                        }).appendTo('#question-' + nonZeroBasedCounter);
+
+
+                        $('<input>', {
+                            text: this.answerChoices[i][j],
+                            class: 'choiceForQuestionInput-' + nonZeroBasedCounter,
+                            id: 'answerChoiceInput-' + (nonZeroBasedCounterForj),
+                            name: this.questionsList[i][0], // Make the name the QUESTION
+                            type: "radio"
+
+                        }).appendTo('#question-' + nonZeroBasedCounter)
+
+                    }
+                }
+            },
+
+
+
+            addSubmitButton: function() {
+                $('<button>', {
+                    text: 'submit'
+
+                }).appendTo('body')
+            },
+
+            // END append question and answer choices to DOM//
+
+
+            //Setters//
+
+            setQuestionList: function(ques) {
+                this.questionsList = ques;
+            },
+
+            setAnswerChoices: function() {
+                var i;
+                for (i = 0; i < this.questionsList.length; i += 1) {
+                    this.answerChoices.push(this.questionsList[i].splice(1, 3));
+                }
+
+            },
+
+            setCorrectAnswersList: function(arr) {
+                var i, j;
+                for (i = 0; i < arr.length; i += 1) {
+                    var answer = arr[i].splice(4, 5)
+                    for (j = 0; j < answer.length; j += 1)
+                        this.correctQuestionsAnswerList.push(answer[j]);
+                }
+
+                // END setters//
+            },
+
+
+
+            run: function(q) {
+
+                this.setQuestionList(q);
+                this.setCorrectAnswersList(q);
+                this.appendQuestionToDom();
+                this.setAnswerChoices();
+                this.appendQuestionChoicesToDom();
+                this.addSubmitButton();
+                this.onSubmitClick(q);
+        
+
+            }
+
+        }
+        return quiz
+
+    }());
+
+    var newQuiz = MODULE;
+    newQuiz.run(questions);
+    </script>
+
+
+</body>
+
+
+</html>
